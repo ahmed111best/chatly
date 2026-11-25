@@ -1,0 +1,143 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --font-sans: "DM Sans", "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+    --font-display: "Plus Jakarta Sans", "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+    /* Core Chatly Brand & Ocean Palette Tokens (Light Mode) */
+    --chatly-navy: #071420;
+    --chatly-navy-soft: #0D2235;
+    --chatly-teal: #0D9488;
+    --chatly-turquoise: #14B8A6;
+    --chatly-cyan: #06B6D4;
+
+    --chatly-bg-canvas: #F1F7FA;
+    --chatly-bg-surface: #FFFFFF;
+    --chatly-bg-elevated: #E6F1F6;
+    --chatly-bg-sidebar: #081826;
+    --chatly-bg-sidebar-hover: #10283E;
+    --chatly-bg-input: #F6FAFC;
+    --chatly-bg-bubble-in: #FFFFFF;
+    --chatly-border: #DCE8EF;
+    --chatly-border-strong: #C3D7E3;
+    --chatly-text-primary: #0B1928;
+    --chatly-text-secondary: #4B647A;
+    --chatly-text-muted: #6C859B;
+    --chatly-accent-glow: rgba(6, 182, 212, 0.18);
+    --chatly-doodle-color: rgba(13, 148, 136, 0.055);
+  }
+
+  .dark {
+    /* Core Chatly Brand & Ocean Palette Tokens (Dark Mode) */
+    --chatly-bg-canvas: #07131E;
+    --chatly-bg-surface: #0B1B2B;
+    --chatly-bg-elevated: #11263B;
+    --chatly-bg-sidebar: #06111C;
+    --chatly-bg-sidebar-hover: #0F2337;
+    --chatly-bg-input: #071420;
+    --chatly-bg-bubble-in: #13283C;
+    --chatly-border: rgba(56, 189, 248, 0.14);
+    --chatly-border-strong: rgba(56, 189, 248, 0.24);
+    --chatly-text-primary: #F1F8FE;
+    --chatly-text-secondary: #9CB8CE;
+    --chatly-text-muted: #6B8CA6;
+    --chatly-accent-glow: rgba(20, 184, 166, 0.24);
+    --chatly-doodle-color: rgba(45, 212, 191, 0.045);
+  }
+
+  html {
+    font-family: var(--font-sans);
+    background-color: var(--chatly-bg-canvas);
+    color: var(--chatly-text-primary);
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display);
+  }
+
+  code, pre, .font-mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(56, 189, 248, 0.25) transparent;
+  }
+}
+
+.chatly-ocean-backdrop {
+  background-color: var(--chatly-bg-canvas);
+  background-image:
+    radial-gradient(ellipse 75% 55% at 15% 15%, rgba(6, 182, 212, 0.14), transparent 65%),
+    radial-gradient(ellipse 65% 50% at 85% 85%, rgba(13, 148, 136, 0.16), transparent 60%);
+}
+
+.dark .chatly-ocean-backdrop {
+  background-color: #050F19;
+  background-image:
+    radial-gradient(ellipse 80% 55% at 12% 18%, rgba(6, 182, 212, 0.2), transparent 62%),
+    radial-gradient(ellipse 70% 55% at 88% 82%, rgba(20, 184, 166, 0.18), transparent 62%),
+    linear-gradient(160deg, #06121E 0%, #091B2C 55%, #05101B 100%);
+}
+
+.chatly-thread-wallpaper {
+  background-color: var(--chatly-bg-canvas);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%2314B8A6' stroke-opacity='0.06' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 24c0-4 3-7 7-7h12c4 0 7 3 7 7v7c0 4-3 7-7 7h-7l-6 4v-4c-4 0-6-3-6-7v-7z'/%3E%3Ccircle cx='88' cy='28' r='8'/%3E%3Cpath d='M84 28l3 3 5-5'/%3E%3Cpath d='M26 84l6-6 6 6-6 6-6-6z'/%3E%3Cpath d='M78 86c0-5 4-9 9-9h10c5 0 9 4 9 9v6c0 5-4 9-9 9h-5l-7 4v-4c-4-1-7-4-7-9v-6z'/%3E%3Cpath d='M58 54h8M62 50v8'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+.dark .chatly-thread-wallpaper {
+  background-color: #071420;
+  background-image:
+    radial-gradient(ellipse 90% 60% at 50% 0%, rgba(20, 184, 166, 0.07), transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%232DD4BF' stroke-opacity='0.05' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 24c0-4 3-7 7-7h12c4 0 7 3 7 7v7c0 4-3 7-7 7h-7l-6 4v-4c-4 0-6-3-6-7v-7z'/%3E%3Ccircle cx='88' cy='28' r='8'/%3E%3Cpath d='M84 28l3 3 5-5'/%3E%3Cpath d='M26 84l6-6 6 6-6 6-6-6z'/%3E%3Cpath d='M78 86c0-5 4-9 9-9h10c5 0 9 4 9 9v6c0 5-4 9-9 9h-5l-7 4v-4c-4-1-7-4-7-9v-6z'/%3E%3Cpath d='M58 54h8M62 50v8'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 100% 100%, 160px 160px;
+}
+
+:root[data-contrast="high"] {
+  --chatly-navy: #020617;
+  --chatly-navy-soft: #0a1929;
+  --chatly-teal: #0f766e;
+  --chatly-turquoise: #2dd4bf;
+  --chatly-border: #94a3b8;
+}
+
+.dark[data-contrast="high"] {
+  --chatly-bg-canvas: #020810;
+  --chatly-bg-surface: #07131f;
+  --chatly-border: rgba(45, 212, 191, 0.35);
+}
+
+:root[data-contrast="high"] body {
+  filter: contrast(1.06);
+}
+
+:root[data-reduce-motion="true"] *,
+:root[data-reduce-motion="true"] *::before,
+:root[data-reduce-motion="true"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

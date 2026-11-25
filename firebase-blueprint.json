@@ -1,0 +1,655 @@
+{
+  "entities": {
+    "UserPublicProfile": {
+      "title": "UserPublicProfile",
+      "description": "Public, PII-free user profile for directory discovery, presence, and chat headers.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "username": { "type": "string", "minLength": 3, "maxLength": 24, "pattern": "^[a-z0-9_\\.]+$" },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "bio": { "type": "string", "maxLength": 240 },
+        "statusText": { "type": "string", "maxLength": 80 },
+        "avatarUrl": { "type": "string", "maxLength": 100000 },
+        "online": { "type": "boolean" },
+        "hasE2eeKey": { "type": "boolean" },
+        "lastSeenAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "username", "displayName", "online", "hasE2eeKey", "createdAt", "updatedAt"]
+    },
+    "UserPrivateAccount": {
+      "title": "UserPrivateAccount",
+      "description": "Owner-only private account data containing PII, preferences, privacy settings, and PIN lock hash.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "email": { "type": "string", "maxLength": 254 },
+        "phoneNumber": { "type": "string", "maxLength": 32 },
+        "preferredLanguage": { "type": "string", "enum": ["en", "ar"] },
+        "themeMode": { "type": "string", "enum": ["light", "dark"] },
+        "accentColor": { "type": "string", "enum": ["teal", "indigo", "amber", "rose"] },
+        "emailVerified": { "type": "boolean" },
+        "twoFactorEnabled": { "type": "boolean" },
+        "phoneVerified": { "type": "boolean" },
+        "inviteToken": { "type": "string", "maxLength": 64 },
+        "pinHash": { "type": "string", "maxLength": 128 },
+        "crashDiagnosticsOptIn": { "type": "boolean" },
+        "phoneDiscoveryConsent": { "type": "boolean" },
+        "privacy": { "type": "object" },
+        "notificationPrefs": { "type": "object" },
+        "accessibilityPrefs": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "preferredLanguage", "themeMode", "accentColor", "createdAt", "updatedAt"]
+    },
+    "DeviceSessionRecord": {
+      "title": "DeviceSessionRecord",
+      "description": "Owner-only active or revoked device session record.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "deviceName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "platform": { "type": "string", "enum": ["web", "windows", "android"] },
+        "userAgent": { "type": "string", "maxLength": 512 },
+        "revoked": { "type": "boolean" },
+        "lastActiveAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "uid", "deviceName", "platform", "revoked", "createdAt", "updatedAt"]
+    },
+    "ContactRelation": {
+      "title": "ContactRelation",
+      "description": "Owner-only contact relationship flags (favorite, blocked).",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "targetUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "isFavorite": { "type": "boolean" },
+        "isBlocked": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerUid", "targetUid", "isFavorite", "isBlocked", "createdAt", "updatedAt"]
+    },
+    "ConversationUserMeta": {
+      "title": "ConversationUserMeta",
+      "description": "Owner-only per-conversation folders, pins, mute/snooze, archive, and draft text.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "conversationId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "folder": { "type": "string", "enum": ["all", "unread", "work", "family", "followup", "favorites", "archived"] },
+        "customLabel": { "type": "string", "maxLength": 40 },
+        "pinned": { "type": "boolean" },
+        "needsFollowUp": { "type": "boolean" },
+        "archived": { "type": "boolean" },
+        "snoozedUntil": { "type": "string", "maxLength": 64 },
+        "draftBody": { "type": "string", "maxLength": 4000 },
+        "lastReadAtMs": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "conversationId", "folder", "pinned", "needsFollowUp", "archived", "updatedAt"]
+    },
+    "SavedNoteRecord": {
+      "title": "SavedNoteRecord",
+      "description": "Owner-only personal Saved Vault note, link, or code snippet.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "category": { "type": "string", "enum": ["note", "link", "snippet"] },
+        "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "content": { "type": "string", "minLength": 1, "maxLength": 8000 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "uid", "category", "title", "content", "createdAt", "updatedAt"]
+    },
+    "MessageReminderRecord": {
+      "title": "MessageReminderRecord",
+      "description": "Owner-only reminder attached to a message.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "messageDocId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "conversationDocId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "messageBody": { "type": "string", "maxLength": 2000 },
+        "remindAt": { "type": "string", "maxLength": 64 },
+        "note": { "type": "string", "maxLength": 300 },
+        "triggered": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "uid", "messageDocId", "conversationDocId", "remindAt", "triggered", "createdAt", "updatedAt"]
+    },
+    "EncryptedBackupRecord": {
+      "title": "EncryptedBackupRecord",
+      "description": "Owner-only client-side AES-GCM encrypted backup snapshot.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "cadence": { "type": "string", "enum": ["manual", "daily", "weekly"] },
+        "checksumSha256": { "type": "string", "minLength": 16, "maxLength": 128 },
+        "cipherPayloadJson": { "type": "string", "minLength": 2, "maxLength": 700000 },
+        "includesSummary": { "type": "string", "maxLength": 300 },
+        "messageCount": { "type": "number" },
+        "verifiedAt": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "uid", "cadence", "checksumSha256", "cipherPayloadJson", "messageCount", "createdAt", "updatedAt"]
+    },
+    "NotificationRecord": {
+      "title": "NotificationRecord",
+      "description": "Owner-only notification item.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "kind": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 140 },
+        "body": { "type": "string", "maxLength": 500 },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "uid", "kind", "title", "read", "createdAt", "updatedAt"]
+    },
+    "E2eePublicKeyRecord": {
+      "title": "E2eePublicKeyRecord",
+      "description": "Public ECDH P-256 JWK key for end-to-end encrypted direct messaging.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "deviceId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "algorithm": { "type": "string", "maxLength": 64 },
+        "publicKeyJwk": { "type": "string", "minLength": 10, "maxLength": 4096 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "deviceId", "algorithm", "publicKeyJwk", "createdAt", "updatedAt"]
+    },
+    "ConversationDoc": {
+      "title": "ConversationDoc",
+      "description": "Direct or group conversation room with bounded member list.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "type": { "type": "string", "enum": ["direct", "group"] },
+        "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "description": { "type": "string", "maxLength": 500 },
+        "creatorUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "memberUids": { "type": "array" },
+        "inviteCode": { "type": "string", "maxLength": 64 },
+        "approvalRequired": { "type": "boolean" },
+        "announcementsOnly": { "type": "boolean" },
+        "lastMessagePreview": { "type": "string", "maxLength": 500 },
+        "lastMessageAtMs": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "type", "title", "creatorUid", "memberUids", "lastMessageAtMs", "createdAt", "updatedAt"]
+    },
+    "ConversationMember": {
+      "title": "ConversationMember",
+      "description": "Member entry with role inside a conversation.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "username": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "avatarUrl": { "type": "string", "maxLength": 100000 },
+        "role": { "type": "string", "enum": ["owner", "admin", "member"] },
+        "memberUids": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "username", "displayName", "role", "memberUids", "createdAt", "updatedAt"]
+    },
+    "ChatMessageDoc": {
+      "title": "ChatMessageDoc",
+      "description": "Real-time message in a conversation with reactions, replies, E2EE envelope, attachments, and stickers.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "clientMessageId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "conversationId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "senderUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "senderUsername": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "senderDisplayName": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "type": { "type": "string", "enum": ["text", "image", "video", "audio", "document", "voice_sticker"] },
+        "body": { "type": "string", "maxLength": 8000 },
+        "e2eeEnvelope": { "type": "string", "maxLength": 32000 },
+        "pinned": { "type": "boolean" },
+        "deleted": { "type": "boolean" },
+        "edited": { "type": "boolean" },
+        "scheduledAt": { "type": "string", "maxLength": 64 },
+        "createdAtMs": { "type": "number" },
+        "memberUids": { "type": "array" },
+        "reactions": { "type": "array" },
+        "starredByUids": { "type": "array" },
+        "readByUids": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "clientMessageId", "conversationId", "senderUid", "type", "body", "pinned", "deleted", "edited", "createdAtMs", "memberUids", "reactions", "createdAt", "updatedAt"]
+    },
+    "TypingStateDoc": {
+      "title": "TypingStateDoc",
+      "description": "Ephemeral typing indicator inside a conversation.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "isTyping": { "type": "boolean" },
+        "memberUids": { "type": "array" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "isTyping", "memberUids", "updatedAt"]
+    },
+    "LocationShareDoc": {
+      "title": "LocationShareDoc",
+      "description": "Real-time location share within a conversation.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "conversationId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "userUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "senderDisplayName": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
+        "accuracyMeters": { "type": "number" },
+        "isLive": { "type": "boolean" },
+        "expiresAt": { "type": "string", "maxLength": 64 },
+        "stopped": { "type": "boolean" },
+        "memberUids": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "conversationId", "userUid", "latitude", "longitude", "isLive", "expiresAt", "stopped", "memberUids", "createdAt", "updatedAt"]
+    },
+    "GroupPollDoc": {
+      "title": "GroupPollDoc",
+      "description": "Group poll with bounded options and voter UIDs.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "conversationId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "creatorUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "question": { "type": "string", "minLength": 1, "maxLength": 300 },
+        "options": { "type": "array" },
+        "closed": { "type": "boolean" },
+        "memberUids": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "conversationId", "creatorUid", "question", "options", "closed", "memberUids", "createdAt", "updatedAt"]
+    },
+    "GroupEventDoc": {
+      "title": "GroupEventDoc",
+      "description": "Scheduled group event.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "conversationId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "creatorUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "description": { "type": "string", "maxLength": 600 },
+        "location": { "type": "string", "maxLength": 200 },
+        "startsAt": { "type": "string", "maxLength": 64 },
+        "memberUids": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "conversationId", "creatorUid", "title", "startsAt", "memberUids", "createdAt", "updatedAt"]
+    },
+    "GroupTaskDoc": {
+      "title": "GroupTaskDoc",
+      "description": "Shared checklist task inside a group.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "conversationId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "creatorUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "completed": { "type": "boolean" },
+        "memberUids": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "conversationId", "creatorUid", "title", "completed", "memberUids", "createdAt", "updatedAt"]
+    },
+    "MediaDoc": {
+      "title": "MediaDoc",
+      "description": "Media attachment stored safely below Firestore 1MB document limit.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "uploaderUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "conversationId": { "type": "string", "maxLength": 128 },
+        "kind": { "type": "string", "enum": ["image", "video", "audio", "document"] },
+        "fileName": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "mimeType": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "sizeBytes": { "type": "number" },
+        "durationMs": { "type": "number" },
+        "dataUrl": { "type": "string", "minLength": 5, "maxLength": 850000 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "uploaderUid", "kind", "fileName", "mimeType", "sizeBytes", "dataUrl", "createdAt", "updatedAt"]
+    },
+    "StickerPackDoc": {
+      "title": "StickerPackDoc",
+      "description": "Reusable Voice Sticker pack shareable via shareCode.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "creatorUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "titleAr": { "type": "string", "maxLength": 80 },
+        "category": { "type": "string", "maxLength": 40 },
+        "shareCode": { "type": "string", "minLength": 4, "maxLength": 32 },
+        "isPublic": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "creatorUid", "title", "shareCode", "isPublic", "createdAt", "updatedAt"]
+    },
+    "VoiceStickerDoc": {
+      "title": "VoiceStickerDoc",
+      "description": "Animated or audio-synced Voice Sticker inside a pack.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "packId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "creatorUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "nameAr": { "type": "string", "maxLength": 80 },
+        "category": { "type": "string", "maxLength": 40 },
+        "kind": { "type": "string", "enum": ["static", "animated", "voice_animated"] },
+        "visualPreset": { "type": "string", "enum": ["pulse_ring", "wave_bars", "prism_burst", "orbit_spark", "custom_image"] },
+        "visualUrl": { "type": "string", "maxLength": 450000 },
+        "audioUrl": { "type": "string", "maxLength": 450000 },
+        "audioDurationMs": { "type": "number" },
+        "trimStartMs": { "type": "number" },
+        "trimEndMs": { "type": "number" },
+        "syncOffsetMs": { "type": "number" },
+        "defaultVolume": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "packId", "creatorUid", "name", "kind", "visualPreset", "audioDurationMs", "createdAt", "updatedAt"]
+    },
+    "StoryDoc": {
+      "title": "StoryDoc",
+      "description": "24h expiring status story.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "userUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "username": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "avatarUrl": { "type": "string", "maxLength": 100000 },
+        "kind": { "type": "string", "enum": ["text", "image", "video"] },
+        "textContent": { "type": "string", "maxLength": 1000 },
+        "backgroundHex": { "type": "string", "maxLength": 24 },
+        "mediaUrl": { "type": "string", "maxLength": 650000 },
+        "audience": { "type": "string", "enum": ["everyone", "contacts"] },
+        "expiresAt": { "type": "string", "maxLength": 64 },
+        "viewUids": { "type": "array" },
+        "reactions": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userUid", "kind", "audience", "expiresAt", "viewUids", "reactions", "createdAt", "updatedAt"]
+    },
+    "ChannelDoc": {
+      "title": "ChannelDoc",
+      "description": "Broadcast channel metadata.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "creatorUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "handle": { "type": "string", "minLength": 3, "maxLength": 32 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "description": { "type": "string", "maxLength": 500 },
+        "isPublic": { "type": "boolean" },
+        "inviteCode": { "type": "string", "minLength": 4, "maxLength": 32 },
+        "subscriberCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "creatorUid", "handle", "title", "isPublic", "inviteCode", "subscriberCount", "createdAt", "updatedAt"]
+    },
+    "ChannelMemberDoc": {
+      "title": "ChannelMemberDoc",
+      "description": "Channel subscriber or moderator role.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "username": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "avatarUrl": { "type": "string", "maxLength": 100000 },
+        "role": { "type": "string", "enum": ["owner", "admin", "moderator", "subscriber"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "username", "displayName", "role", "createdAt", "updatedAt"]
+    },
+    "ChannelPostDoc": {
+      "title": "ChannelPostDoc",
+      "description": "Broadcast post inside a channel.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "channelId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "authorUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "authorDisplayName": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "body": { "type": "string", "minLength": 1, "maxLength": 8000 },
+        "pinned": { "type": "boolean" },
+        "viewCount": { "type": "number" },
+        "reactions": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "channelId", "authorUid", "body", "pinned", "viewCount", "reactions", "createdAt", "updatedAt"]
+    },
+    "FriendRequestDoc": {
+      "title": "FriendRequestDoc",
+      "description": "Friend request between two authenticated users.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "senderUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "receiverUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "senderUsername": { "type": "string", "maxLength": 40 },
+        "senderDisplayName": { "type": "string", "maxLength": 80 },
+        "senderAvatarUrl": { "type": "string", "maxLength": 100000 },
+        "receiverUsername": { "type": "string", "maxLength": 40 },
+        "receiverDisplayName": { "type": "string", "maxLength": 80 },
+        "status": { "type": "string", "enum": ["pending", "accepted", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "senderUid", "receiverUid", "status", "createdAt", "updatedAt"]
+    },
+    "CallDoc": {
+      "title": "CallDoc",
+      "description": "Real-time WebRTC signaling session and call history record.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "conversationId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "callerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "calleeUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "callerName": { "type": "string", "maxLength": 80 },
+        "calleeName": { "type": "string", "maxLength": 80 },
+        "peerUsername": { "type": "string", "maxLength": 40 },
+        "callType": { "type": "string", "enum": ["audio", "video", "group"] },
+        "status": { "type": "string", "enum": ["ringing", "active", "ended", "missed", "declined"] },
+        "offerSdp": { "type": "string", "maxLength": 32000 },
+        "answerSdp": { "type": "string", "maxLength": 32000 },
+        "participantUids": { "type": "array" },
+        "startedAt": { "type": "string", "format": "date-time" },
+        "endedAt": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "conversationId", "callerUid", "calleeUid", "callType", "status", "participantUids", "createdAt", "updatedAt"]
+    },
+    "CallIceCandidateDoc": {
+      "title": "CallIceCandidateDoc",
+      "description": "WebRTC ICE candidate exchanged via Firestore real-time listener.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "senderUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "candidateJson": { "type": "string", "minLength": 2, "maxLength": 4096 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "senderUid", "candidateJson", "createdAt"]
+    },
+    "SafetyReportDoc": {
+      "title": "SafetyReportDoc",
+      "description": "User moderation/safety report.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "reporterUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "targetType": { "type": "string", "enum": ["user", "group", "channel", "message"] },
+        "targetId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "details": { "type": "string", "maxLength": 2000 },
+        "status": { "type": "string", "enum": ["open", "reviewing", "resolved", "appealed"] },
+        "appealNote": { "type": "string", "maxLength": 1000 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "reporterUid", "targetType", "targetId", "reason", "status", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users_public/{uid}": {
+      "schema": { "$ref": "#/entities/UserPublicProfile" },
+      "description": "Public profile records searchable by @username without exposing PII."
+    },
+    "/users_private/{uid}": {
+      "schema": { "$ref": "#/entities/UserPrivateAccount" },
+      "description": "Owner-only private account data (email, phone, privacy, preferences)."
+    },
+    "/users_private/{uid}/sessions/{sessionId}": {
+      "schema": { "$ref": "#/entities/DeviceSessionRecord" },
+      "description": "Owner-only active/revoked device sessions."
+    },
+    "/users_private/{uid}/contacts/{targetUid}": {
+      "schema": { "$ref": "#/entities/ContactRelation" },
+      "description": "Owner-only contact favorite/block state."
+    },
+    "/users_private/{uid}/conversationMeta/{convId}": {
+      "schema": { "$ref": "#/entities/ConversationUserMeta" },
+      "description": "Owner-only folders, pins, mute state, and drafts."
+    },
+    "/users_private/{uid}/savedNotes/{noteId}": {
+      "schema": { "$ref": "#/entities/SavedNoteRecord" },
+      "description": "Owner-only Saved Vault items."
+    },
+    "/users_private/{uid}/reminders/{reminderId}": {
+      "schema": { "$ref": "#/entities/MessageReminderRecord" },
+      "description": "Owner-only message reminders."
+    },
+    "/users_private/{uid}/backups/{backupId}": {
+      "schema": { "$ref": "#/entities/EncryptedBackupRecord" },
+      "description": "Owner-only client-encrypted backups."
+    },
+    "/users_private/{uid}/notifications/{notifId}": {
+      "schema": { "$ref": "#/entities/NotificationRecord" },
+      "description": "Owner-only alerts."
+    },
+    "/e2eeKeys/{uid}": {
+      "schema": { "$ref": "#/entities/E2eePublicKeyRecord" },
+      "description": "Public ECDH keys for E2EE direct chats."
+    },
+    "/conversations/{convId}": {
+      "schema": { "$ref": "#/entities/ConversationDoc" },
+      "description": "Direct and group conversation rooms."
+    },
+    "/conversations/{convId}/members/{memberUid}": {
+      "schema": { "$ref": "#/entities/ConversationMember" },
+      "description": "Membership & roles inside conversations."
+    },
+    "/conversations/{convId}/messages/{msgId}": {
+      "schema": { "$ref": "#/entities/ChatMessageDoc" },
+      "description": "Real-time messages inside a conversation."
+    },
+    "/conversations/{convId}/typing/{uid}": {
+      "schema": { "$ref": "#/entities/TypingStateDoc" },
+      "description": "Real-time typing indicators inside a conversation."
+    },
+    "/conversations/{convId}/locations/{shareId}": {
+      "schema": { "$ref": "#/entities/LocationShareDoc" },
+      "description": "Real-time live location shares."
+    },
+    "/conversations/{convId}/polls/{pollId}": {
+      "schema": { "$ref": "#/entities/GroupPollDoc" },
+      "description": "Group polls."
+    },
+    "/conversations/{convId}/events/{eventId}": {
+      "schema": { "$ref": "#/entities/GroupEventDoc" },
+      "description": "Group events."
+    },
+    "/conversations/{convId}/tasks/{taskId}": {
+      "schema": { "$ref": "#/entities/GroupTaskDoc" },
+      "description": "Group tasks."
+    },
+    "/media/{mediaId}": {
+      "schema": { "$ref": "#/entities/MediaDoc" },
+      "description": "Uploaded media items stored below 1MB."
+    },
+    "/stickerPacks/{packId}": {
+      "schema": { "$ref": "#/entities/StickerPackDoc" },
+      "description": "Voice Sticker packs."
+    },
+    "/stickerPacks/{packId}/stickers/{stickerId}": {
+      "schema": { "$ref": "#/entities/VoiceStickerDoc" },
+      "description": "Voice Stickers inside a pack."
+    },
+    "/stories/{storyId}": {
+      "schema": { "$ref": "#/entities/StoryDoc" },
+      "description": "24h expiring stories."
+    },
+    "/channels/{channelId}": {
+      "schema": { "$ref": "#/entities/ChannelDoc" },
+      "description": "Public and private broadcast channels."
+    },
+    "/channels/{channelId}/members/{memberUid}": {
+      "schema": { "$ref": "#/entities/ChannelMemberDoc" },
+      "description": "Channel subscribers and roles."
+    },
+    "/channels/{channelId}/posts/{postId}": {
+      "schema": { "$ref": "#/entities/ChannelPostDoc" },
+      "description": "Channel broadcast posts."
+    },
+    "/friendRequests/{reqId}": {
+      "schema": { "$ref": "#/entities/FriendRequestDoc" },
+      "description": "Friend requests between users."
+    },
+    "/calls/{callId}": {
+      "schema": { "$ref": "#/entities/CallDoc" },
+      "description": "WebRTC call signaling & history."
+    },
+    "/calls/{callId}/candidates/{candId}": {
+      "schema": { "$ref": "#/entities/CallIceCandidateDoc" },
+      "description": "ICE candidates for active WebRTC calls."
+    },
+    "/safetyReports/{reportId}": {
+      "schema": { "$ref": "#/entities/SafetyReportDoc" },
+      "description": "Safety reports filed by authenticated users."
+    }
+  }
+}

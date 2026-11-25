@@ -1,0 +1,6 @@
+{
+  "name": "Chatly — شاتلي",
+  "description": "Connect Freely. Communicate Better. A bilingual (AR/EN) privacy-first real-time messaging platform.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

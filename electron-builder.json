@@ -1,0 +1,24 @@
+{
+  "appId": "com.chatly.desktop",
+  "productName": "Chatly",
+  "directories": {
+    "output": "release"
+  },
+  "files": [
+    "dist/**/*",
+    "electron/dist/**/*",
+    "electron/package.json",
+    "package.json"
+  ],
+  "win": {
+    "target": [
+      "nsis",
+      "portable"
+    ],
+    "icon": "public/icon.svg"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true
+  }
+}
